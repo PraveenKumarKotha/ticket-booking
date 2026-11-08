@@ -40,3 +40,14 @@ Learned: one-to-many. The foreign key goes on the "many" side (shows has movie\_
 
 Learned: the same seat label (A1) in two different shows is two different rows, because each row has its own show\_id.
 
+
+
+Day 2: Pushed Show and ShowSeat to GitHub with my own commit.
+
+
+Built: ShowRepository and ShowController (GET and POST /shows).
+
+Learned: client sends movieId, controller looks up the Movie, so the foreign key is set correctly.
+
+Tested: POST /shows returned the show with its movie nested inside.
+
