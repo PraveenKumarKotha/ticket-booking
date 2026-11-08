@@ -51,3 +51,31 @@ Learned: client sends movieId, controller looks up the Movie, so the foreign key
 
 Tested: POST /shows returned the show with its movie nested inside.
 
+Tested: movieId 99 returns 500 because orElseThrow fires and nothing is saved. TODO: return 404 instead.
+
+
+
+Built: ShowSeatRepository, auto-creating 10 seats per show, GET /shows/{id}/seats.
+
+Learned: @Transactional = all steps succeed or all are undone.
+
+Learned: foreign keys are enforced by the database, not Spring. Spring's orElseThrow is only a friendly early check.
+
+
+
+Problem: Postman showed ECONNREFUSED on port 8080.
+
+Cause: Spring Boot app was stopped.
+
+Fix: started the app from IntelliJ and waited for "Started TicketbookingApplication".
+
+Built: ShowSeatRepository, auto-creating 10 seats per show, GET /shows/{id}/seats.
+
+Learned: @Transactional = all steps succeed or all are undone.
+
+Learned: foreign keys are enforced by the database, not Spring. orElseThrow is only a friendly early check.
+
+Problem: ECONNREFUSED on 8080. Cause: app was stopped. Fix: start the app.
+
+Problem: seats GET returned \[]. Cause: show was created before the seat code. Fix: create a new show.
+
