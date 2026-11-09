@@ -82,3 +82,9 @@ Problem: seats GET returned \[]. Cause: show was created before the seat code. F
 Built: POST /seats/{id}/book (simple version: read, check, save).
 Tested: booking twice one after another fails the second time (500).
 TODO: two simultaneous requests may both pass the check (double booking).
+
+
+Experiment: 20 concurrent requests on one seat (A2, id 12).
+Result: SUCCESS = 10, FAILED = 10. Expected SUCCESS = 1. That is double booking.
+Cause: read, check, save are separate steps (race condition). @Transactional alone doesn't prevent it.
+Problem: first test run showed SUCCESS = 0, FAILED = 20. Cause: the app was not running.
