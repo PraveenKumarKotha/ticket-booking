@@ -79,3 +79,6 @@ Problem: ECONNREFUSED on 8080. Cause: app was stopped. Fix: start the app.
 
 Problem: seats GET returned \[]. Cause: show was created before the seat code. Fix: create a new show.
 
+Built: POST /seats/{id}/book (simple version: read, check, save).
+Tested: booking twice one after another fails the second time (500).
+TODO: two simultaneous requests may both pass the check (double booking).
