@@ -88,3 +88,8 @@ Experiment: 20 concurrent requests on one seat (A2, id 12).
 Result: SUCCESS = 10, FAILED = 10. Expected SUCCESS = 1. That is double booking.
 Cause: read, check, save are separate steps (race condition). @Transactional alone doesn't prevent it.
 Problem: first test run showed SUCCESS = 0, FAILED = 20. Cause: the app was not running.
+
+cd C:\projects\ticket-booking
+git add .
+git commit -m "Add concurrency test that reproduces double booking"
+git push
