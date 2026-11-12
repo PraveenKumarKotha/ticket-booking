@@ -45,6 +45,7 @@ Learned: the same seat label (A1) in two different shows is two different rows, 
 Day 2: Pushed Show and ShowSeat to GitHub with my own commit.
 
 
+
 Built: ShowRepository and ShowController (GET and POST /shows).
 
 Learned: client sends movieId, controller looks up the Movie, so the foreign key is set correctly.
@@ -84,12 +85,29 @@ Tested: booking twice one after another fails the second time (500).
 TODO: two simultaneous requests may both pass the check (double booking).
 
 
+
 Experiment: 20 concurrent requests on one seat (A2, id 12).
 Result: SUCCESS = 10, FAILED = 10. Expected SUCCESS = 1. That is double booking.
 Cause: read, check, save are separate steps (race condition). @Transactional alone doesn't prevent it.
 Problem: first test run showed SUCCESS = 0, FAILED = 20. Cause: the app was not running.
 
-cd C:\projects\ticket-booking
+cd C:\\projects\\ticket-booking
 git add .
 git commit -m "Add concurrency test that reproduces double booking"
 git push
+
+
+
+Fix 1: optimistic locking with @Version.
+
+Result: SUCCESS = 1, FAILED = 19.
+
+Learned: update ... where id=? and version=? updates 0 rows if someone saved first.
+
+
+Built: SeatUnavailableException and GlobalExceptionHandler (@RestControllerAdvice).
+
+Learned: 409 = client asked for something that clashes with current state. 500 = our server bug.
+
+Result: booking an already booked seat returns 409 with a clear message.
+

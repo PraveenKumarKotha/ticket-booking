@@ -17,7 +17,7 @@ public class BookingController {
         ShowSeat seat = seatRepo.findById(seatId)
                 .orElseThrow(() -> new RuntimeException("Seat not found"));
         if (!"AVAILABLE".equals(seat.getStatus())) {
-            throw new RuntimeException("Seat already booked");
+            throw new SeatUnavailableException("Seat already booked");
         }
         seat.setStatus("BOOKED");
         return seatRepo.save(seat);
