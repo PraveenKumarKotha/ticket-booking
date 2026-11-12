@@ -136,3 +136,12 @@ Learned: Redis SET key value EX seconds stores a value that deletes itself. TTL 
 
 Learned: Redis is for temporary data (holds), PostgreSQL for permanent data (bookings).
 
+
+Step 4B: added spring-boot-starter-data-redis and HoldController (POST /seats/{id}/hold).
+
+Learned: setIfAbsent = Redis SET NX EX, an atomic "set only if empty" with expiry. Only one holder wins.
+
+Problem: Cannot resolve StringRedisTemplate. Cause: Maven had not downloaded the Redis library. Fix: reload Maven.
+
+Result: second hold on the same seat returns 409 "Seat is held by someone else". TTL counts down from 300.
+
