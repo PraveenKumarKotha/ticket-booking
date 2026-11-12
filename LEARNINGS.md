@@ -111,3 +111,12 @@ Learned: 409 = client asked for something that clashes with current state. 500 =
 
 Result: booking an already booked seat returns 409 with a clear message.
 
+
+Built: Booking entity and bookings table, linked to show\_seats by a foreign key.
+
+Learned: seat update and booking insert happen in one @Transactional method (both or neither).
+
+Learned: unique = true on show\_seat\_id is a database-level safety net against two bookings for one seat.
+
+Problem: Postman showed old response. Cause: app was running old code. Fix: restart the app.
+
