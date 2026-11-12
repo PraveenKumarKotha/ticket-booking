@@ -120,3 +120,12 @@ Learned: unique = true on show\_seat\_id is a database-level safety net against 
 
 Problem: Postman showed old response. Cause: app was running old code. Fix: restart the app.
 
+
+Step 3: updated concurrency test to send a customer name and count 200 / 409 / other.
+
+Result: 20 concurrent requests on seat 14: SUCCESS = 1, CONFLICT = 19, OTHER = 0.
+
+Verified in database: exactly 1 row in bookings for seat 14.
+
+Learned: two protections: @Version (application level) and unique constraint on bookings.show\_seat\_id (database level).
+
