@@ -18,4 +18,7 @@ public class ShowSeat {
     private String seatNumber;
 
     private String status = "AVAILABLE";
+
+    @Version
+    private Long version;
 }
