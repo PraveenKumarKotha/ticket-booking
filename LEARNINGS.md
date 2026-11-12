@@ -129,3 +129,10 @@ Verified in database: exactly 1 row in bookings for seat 14.
 
 Learned: two protections: @Version (application level) and unique constraint on bookings.show\_seat\_id (database level).
 
+
+Step 4A: added Redis (redis:7) to docker-compose.yml, port 6379.
+
+Learned: Redis SET key value EX seconds stores a value that deletes itself. TTL shows seconds left.
+
+Learned: Redis is for temporary data (holds), PostgreSQL for permanent data (bookings).
+
