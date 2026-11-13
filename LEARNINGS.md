@@ -105,11 +105,13 @@ Result: SUCCESS = 1, FAILED = 19.
 Learned: update ... where id=? and version=? updates 0 rows if someone saved first.
 
 
+
 Built: SeatUnavailableException and GlobalExceptionHandler (@RestControllerAdvice).
 
 Learned: 409 = client asked for something that clashes with current state. 500 = our server bug.
 
 Result: booking an already booked seat returns 409 with a clear message.
+
 
 
 Built: Booking entity and bookings table, linked to show\_seats by a foreign key.
@@ -121,6 +123,7 @@ Learned: unique = true on show\_seat\_id is a database-level safety net against 
 Problem: Postman showed old response. Cause: app was running old code. Fix: restart the app.
 
 
+
 Step 3: updated concurrency test to send a customer name and count 200 / 409 / other.
 
 Result: 20 concurrent requests on seat 14: SUCCESS = 1, CONFLICT = 19, OTHER = 0.
@@ -130,11 +133,13 @@ Verified in database: exactly 1 row in bookings for seat 14.
 Learned: two protections: @Version (application level) and unique constraint on bookings.show\_seat\_id (database level).
 
 
+
 Step 4A: added Redis (redis:7) to docker-compose.yml, port 6379.
 
 Learned: Redis SET key value EX seconds stores a value that deletes itself. TTL shows seconds left.
 
 Learned: Redis is for temporary data (holds), PostgreSQL for permanent data (bookings).
+
 
 
 Step 4B: added spring-boot-starter-data-redis and HoldController (POST /seats/{id}/hold).
@@ -144,4 +149,15 @@ Learned: setIfAbsent = Redis SET NX EX, an atomic "set only if empty" with expir
 Problem: Cannot resolve StringRedisTemplate. Cause: Maven had not downloaded the Redis library. Fix: reload Maven.
 
 Result: second hold on the same seat returns 409 "Seat is held by someone else". TTL counts down from 300.
+
+
+Step 4C: booking now requires an active Redis hold by the same customer.
+
+Flow: hold (Redis, 5 min) -> book (PostgreSQL seat BOOKED + bookings row) -> delete hold.
+
+Verified: after booking, GET hold:seat:16 returns (nil), so the hold is deleted by the booking.
+
+Learned: verify with Redis/PostgreSQL directly, because a Postman result can come from stale code.
+
+Note: DoubleBookingTest needs updating, because booking now requires a hold first.
 
