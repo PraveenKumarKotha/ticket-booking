@@ -199,3 +199,12 @@ Problem: payment returned SUCCESS for simulateFailure. Cause: old code running, 
 
 Learned: to test new behaviour with idempotency, use a new key or delete the old row.
 
+
+Design gap found: booking is created before payment, so an abandoned booking stays BOOKED forever.
+
+Fix plan: hold (Redis, TTL) -> pay -> book. If the user leaves, the hold expires and the seat frees itself.
+
+Second gap: hold can expire during payment. Fix: extend the hold while paying, and refund if the seat was taken (compensation).
+
+Learned: seat becomes BOOKED only after payment succeeds.
+
