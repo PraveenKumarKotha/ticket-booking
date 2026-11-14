@@ -175,3 +175,27 @@ Learned: key is created by the client per attempt; payment id is created by the 
 
 Learned: two layers: findByIdempotencyKey check in code, unique constraint on the column in the database.
 
+
+Built: PaymentController (POST /payments with Idempotency-Key header).
+
+Tested: same key repeated returns the same payment (id 1); new key creates a new payment (id 2).
+
+Learned: idempotent = same request repeated has the same effect as once.
+
+Learned: key is created by the client per attempt; payment id is created by the database.
+
+Learned: two layers: findByIdempotencyKey check in code, unique constraint in the database.
+
+Gap: same booking can be paid twice with different keys. TODO: refuse a second payment for a paid booking.
+
+
+Built: payment failure releases the seat (seat AVAILABLE, booking deleted) in one @Transactional method.
+
+Verified: seat 17 AVAILABLE and 0 booking rows after a failed payment.
+
+Learned: this "undo" is called a compensation; the pattern is a Saga.
+
+Problem: payment returned SUCCESS for simulateFailure. Cause: old code running, plus the saved key fail-001 returned by the idempotency check. Fix: restart app and delete the old row.
+
+Learned: to test new behaviour with idempotency, use a new key or delete the old row.
+
