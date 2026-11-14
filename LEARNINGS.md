@@ -151,6 +151,7 @@ Problem: Cannot resolve StringRedisTemplate. Cause: Maven had not downloaded the
 Result: second hold on the same seat returns 409 "Seat is held by someone else". TTL counts down from 300.
 
 
+
 Step 4C: booking now requires an active Redis hold by the same customer.
 
 Flow: hold (Redis, 5 min) -> book (PostgreSQL seat BOOKED + bookings row) -> delete hold.
@@ -160,4 +161,17 @@ Verified: after booking, GET hold:seat:16 returns (nil), so the hold is deleted 
 Learned: verify with Redis/PostgreSQL directly, because a Postman result can come from stale code.
 
 Note: DoubleBookingTest needs updating, because booking now requires a hold first.
+
+Interview answer: double booking is prevented in layers. Redis hold (set-if-absent, 5 min TTL) protects the payment window; @Version optimistic locking protects the save; a unique constraint on bookings.show\_seat\_id is the database safety net.
+
+Git = version control of code. version column = optimistic locking of a row. Different things.
+
+
+Built: PaymentController (POST /payments with Idempotency-Key header).
+
+Learned: idempotent = same request repeated has the same effect as once.
+
+Learned: key is created by the client per attempt; payment id is created by the database.
+
+Learned: two layers: findByIdempotencyKey check in code, unique constraint on the column in the database.
 
