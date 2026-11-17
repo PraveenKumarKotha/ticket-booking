@@ -167,6 +167,7 @@ Interview answer: double booking is prevented in layers. Redis hold (set-if-abse
 Git = version control of code. version column = optimistic locking of a row. Different things.
 
 
+
 Built: PaymentController (POST /payments with Idempotency-Key header).
 
 Learned: idempotent = same request repeated has the same effect as once.
@@ -174,6 +175,7 @@ Learned: idempotent = same request repeated has the same effect as once.
 Learned: key is created by the client per attempt; payment id is created by the database.
 
 Learned: two layers: findByIdempotencyKey check in code, unique constraint on the column in the database.
+
 
 
 Built: PaymentController (POST /payments with Idempotency-Key header).
@@ -189,6 +191,7 @@ Learned: two layers: findByIdempotencyKey check in code, unique constraint in th
 Gap: same booking can be paid twice with different keys. TODO: refuse a second payment for a paid booking.
 
 
+
 Built: payment failure releases the seat (seat AVAILABLE, booking deleted) in one @Transactional method.
 
 Verified: seat 17 AVAILABLE and 0 booking rows after a failed payment.
@@ -200,6 +203,7 @@ Problem: payment returned SUCCESS for simulateFailure. Cause: old code running, 
 Learned: to test new behaviour with idempotency, use a new key or delete the old row.
 
 
+
 Design gap found: booking is created before payment, so an abandoned booking stays BOOKED forever.
 
 Fix plan: hold (Redis, TTL) -> pay -> book. If the user leaves, the hold expires and the seat frees itself.
@@ -207,4 +211,11 @@ Fix plan: hold (Redis, TTL) -> pay -> book. If the user leaves, the hold expires
 Second gap: hold can expire during payment. Fix: extend the hold while paying, and refund if the seat was taken (compensation).
 
 Learned: seat becomes BOOKED only after payment succeeds.
+
+
+Reordered flow: hold (Redis) -> pay -> book. The payment step now creates the booking in one transaction.
+
+Learned: a seat is BOOKED only after payment succeeds; abandoned holds expire by themselves.
+
+Failed payment only saves a FAILED record (bookingId null); no undo needed because nothing was booked.
 
