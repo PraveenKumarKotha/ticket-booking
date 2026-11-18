@@ -233,5 +233,7 @@ What's next:
 
 &#x20;   Learn more at https://docs.docker.com/go/debug-cli/
 
+SET NX = set only if the key does not exist; check and write are one atomic Redis command. Spring: setIfAbsent.
+
 
 
