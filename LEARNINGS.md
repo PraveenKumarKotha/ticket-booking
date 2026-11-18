@@ -213,9 +213,25 @@ Second gap: hold can expire during payment. Fix: extend the hold while paying, a
 Learned: seat becomes BOOKED only after payment succeeds.
 
 
+
 Reordered flow: hold (Redis) -> pay -> book. The payment step now creates the booking in one transaction.
 
 Learned: a seat is BOOKED only after payment succeeds; abandoned holds expire by themselves.
 
 Failed payment only saves a FAILED record (bookingId null); no undo needed because nothing was booked.
+
+
+docker exec -it ticket-redis redis-cli GET hold:seat:19
+
+(nil)
+
+
+
+What's next:
+
+&#x20;   Try Docker Debug for seamless, persistent debugging tools in any container or image → docker debug ticket-redis
+
+&#x20;   Learn more at https://docs.docker.com/go/debug-cli/
+
+
 
