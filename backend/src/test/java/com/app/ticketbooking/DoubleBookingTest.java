@@ -14,27 +14,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 class DoubleBookingTest {
 
     @Test
-    void manyPeopleBookSameSeat() throws Exception {
-        int people = 20;
-        long seatId = 14; // A4 of show 4, must be AVAILABLE
+    void sameHolderPaysManyTimesAtOnce() throws Exception {
+        int taps = 20;
+        long seatId = 15; // A5 of show 4
+        String runId = String.valueOf(System.nanoTime());
 
         HttpClient client = HttpClient.newHttpClient();
-        ExecutorService pool = Executors.newFixedThreadPool(people);
-        CountDownLatch ready = new CountDownLatch(people);
+        ExecutorService pool = Executors.newFixedThreadPool(taps);
+        CountDownLatch ready = new CountDownLatch(taps);
         CountDownLatch start = new CountDownLatch(1);
         AtomicInteger success = new AtomicInteger();
         AtomicInteger conflict = new AtomicInteger();
         AtomicInteger other = new AtomicInteger();
 
-        for (int i = 0; i < people; i++) {
+        for (int i = 0; i < taps; i++) {
             final int n = i;
             pool.submit(() -> {
                 try {
                     HttpRequest req = HttpRequest.newBuilder()
-                            .uri(URI.create("http://localhost:8080/seats/" + seatId + "/book"))
+                            .uri(URI.create("http://localhost:8080/payments"))
                             .header("Content-Type", "application/json")
+                            .header("Idempotency-Key", "race-" + runId + "-" + n)
                             .POST(HttpRequest.BodyPublishers.ofString(
-                                    "{\"customerName\": \"Person" + n + "\"}"))
+                                    "{\"seatId\": " + seatId
+                                            + ", \"customerName\": \"Ravi\", \"simulateFailure\": false}"))
                             .build();
                     ready.countDown();
                     start.await();

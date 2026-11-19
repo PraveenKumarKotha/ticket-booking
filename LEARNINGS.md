@@ -246,5 +246,9 @@ Learned: a DTO is a small object carrying only the fields the screen needs.
 
 Problem: 405 on /shows/4/seats. Cause: Postman was set to POST. Fix: switch to GET.
 
+Rewrote the concurrency test for the new flow: same holder, 20 simultaneous payments with different idempotency keys on one seat.
 
+Purpose: Redis lets a same-holder double tap through, so @Version and the unique constraint must stop the extras.
+
+Result: (fill in your SUCCESS / CONFLICT / OTHER numbers and the booking row count)
 
