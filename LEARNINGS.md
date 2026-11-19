@@ -221,6 +221,7 @@ Learned: a seat is BOOKED only after payment succeeds; abandoned holds expire by
 Failed payment only saves a FAILED record (bookingId null); no undo needed because nothing was booked.
 
 
+
 docker exec -it ticket-redis redis-cli GET hold:seat:19
 
 (nil)
@@ -234,6 +235,16 @@ What's next:
 &#x20;   Learn more at https://docs.docker.com/go/debug-cli/
 
 SET NX = set only if the key does not exist; check and write are one atomic Redis command. Spring: setIfAbsent.
+
+Built: seat map API. Sorted by id, returns a small SeatView (id, seatNumber, status), and shows HELD for seats with a Redis hold.
+
+Verified: seat 20 showed HELD after POST /seats/20/hold.
+
+Learned: HELD is not stored in PostgreSQL; it is computed from Redis when building the response.
+
+Learned: a DTO is a small object carrying only the fields the screen needs.
+
+Problem: 405 on /shows/4/seats. Cause: Postman was set to POST. Fix: switch to GET.
 
 
 

@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface ShowSeatRepository extends JpaRepository<ShowSeat, Long> {
     List<ShowSeat> findByShowId(Long showId);
+    List<ShowSeat> findByShowIdOrderByIdAsc(Long showId);
 }

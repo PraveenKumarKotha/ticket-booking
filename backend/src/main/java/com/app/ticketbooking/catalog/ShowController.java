@@ -1,5 +1,6 @@
 package com.app.ticketbooking.catalog;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
@@ -14,16 +15,20 @@ public class ShowController {
     private final ShowRepository showRepo;
     private final MovieRepository movieRepo;
     private final ShowSeatRepository seatRepo;
+    private final StringRedisTemplate redis;
 
     public ShowController(ShowRepository showRepo, MovieRepository movieRepo,
-                          ShowSeatRepository seatRepo) {
+                          ShowSeatRepository seatRepo, StringRedisTemplate redis) {
         this.showRepo = showRepo;
         this.movieRepo = movieRepo;
         this.seatRepo = seatRepo;
+        this.redis = redis;
     }
 
     public record CreateShowRequest(Long movieId, String hall,
                                     LocalDateTime startTime, BigDecimal price) {}
+
+    public record SeatView(Long id, String seatNumber, String status) {}
 
     @GetMapping
     public List<Show> getAll() {
@@ -53,10 +58,19 @@ public class ShowController {
         seatRepo.saveAll(seats);
 
         return saved;
-
     }
+
     @GetMapping("/{id}/seats")
-    public List<ShowSeat> getSeats(@PathVariable Long id) {
-        return seatRepo.findByShowId(id);
+    public List<SeatView> getSeats(@PathVariable Long id) {
+        List<SeatView> result = new ArrayList<>();
+        for (ShowSeat s : seatRepo.findByShowIdOrderByIdAsc(id)) {
+            String status = s.getStatus();
+            if ("AVAILABLE".equals(status)
+                    && Boolean.TRUE.equals(redis.hasKey("hold:seat:" + s.getId()))) {
+                status = "HELD";
+            }
+            result.add(new SeatView(s.getId(), s.getSeatNumber(), status));
+        }
+        return result;
     }
 }
